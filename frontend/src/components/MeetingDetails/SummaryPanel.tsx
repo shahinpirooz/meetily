@@ -6,6 +6,7 @@ import { EmptyStateSummary } from '@/components/EmptyStateSummary';
 import { ModelConfig } from '@/components/ModelSettingsModal';
 import { SummaryGeneratorButtonGroup } from './SummaryGeneratorButtonGroup';
 import { SummaryUpdaterButtonGroup } from './SummaryUpdaterButtonGroup';
+import { SummaryExportButtons } from './SummaryExportButtons'; // fork: rich-text export
 import Analytics from '@/lib/analytics';
 import { useEffect, useRef, useState, RefObject } from 'react';
 import { toast } from 'sonner';
@@ -273,6 +274,18 @@ export function SummaryPanel({
                 isDirty={isSummaryDirty}
                 onSave={onSaveAll}
                 onCopy={onCopySummary}
+              />
+            </div>
+          )}
+
+          {/* fork: rich-text export (copy as rich text / markdown, email) */}
+          {hasSummary && !isSummaryLoading && (
+            <div className="flex-shrink-0">
+              <SummaryExportButtons
+                summaryRef={summaryRef}
+                aiSummary={aiSummary}
+                meetingTitle={meetingTitle}
+                meeting={meeting}
               />
             </div>
           )}

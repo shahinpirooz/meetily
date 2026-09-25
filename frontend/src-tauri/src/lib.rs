@@ -49,6 +49,7 @@ pub mod anthropic;
 pub mod groq;
 pub mod openrouter;
 pub mod parakeet_engine;
+pub mod rich_export; // fork: rich-text export / email
 pub mod state;
 pub mod summary;
 pub mod tray;
@@ -735,6 +736,8 @@ pub fn run() {
             api::test_backend_connection,
             api::debug_backend_connection,
             api::open_external_url,
+            rich_export::rich_export_open_eml, // fork
+            rich_export::rich_export_open_mailto, // fork
             // Custom OpenAI commands
             api::api_save_custom_openai_config,
             api::api_get_custom_openai_config,
