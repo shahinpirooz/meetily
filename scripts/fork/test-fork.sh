@@ -28,7 +28,33 @@ done
 if npx tsc --noEmit -p .; then echo "ok   TypeScript"; else echo "FAIL TypeScript"; fail=1; fi
 
 if [ "${1:-}" = "--rust" ]; then
-  if (cd src-tauri && cargo test --lib rich_export); then echo "ok   Rust rich_export"; else echo "FAIL Rust"; fail=1; fi
+  if ! command -v cargo >/dev/null; then
+    echo "FAIL Rust: cargo not found. Install Rust first: https://rustup.rs (then open a new terminal)"
+    fail=1
+  elif ! command -v cmake >/dev/null; then
+    echo "FAIL Rust: cmake not found (needed to compile Whisper). macOS: brew install cmake"
+    fail=1
+  else
+    # The app bundles a llama-helper sidecar that upstream's dev-gpu.sh /
+    # build-gpu.sh compile first; tauri-build refuses to compile without it.
+    triple=$(rustc -vV | awk '/^host:/ {print $2}')
+    exe=""; case "$triple" in *windows*) exe=".exe";; esac
+    sidecar="src-tauri/binaries/llama-helper-$triple$exe"
+    if [ ! -f "$sidecar" ]; then
+      feature=""
+      case "$triple" in aarch64-apple-darwin) feature="--features metal";; esac
+      echo "Building the llama-helper sidecar first ($triple ${feature:-cpu})..."
+      if (cd ../llama-helper && cargo build $feature); then
+        mkdir -p src-tauri/binaries && cp "../target/debug/llama-helper$exe" "$sidecar"
+      else
+        echo "FAIL Rust: llama-helper did not build"; fail=1
+      fi
+    fi
+    if [ -f "$sidecar" ]; then
+      echo "Compiling the Tauri app for the Rust tests (the first run takes 10-20 minutes)..."
+      if (cd src-tauri && cargo test --lib rich_export); then echo "ok   Rust rich_export"; else echo "FAIL Rust"; fail=1; fi
+    fi
+  fi
 fi
 
 [ $fail -eq 0 ] && echo "ALL TESTS PASSED" || echo "SOME TESTS FAILED"
