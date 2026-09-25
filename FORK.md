@@ -87,6 +87,9 @@ scripts/fork/app.sh dev      # run in development mode
 scripts/fork/app.sh build    # installable build
 ```
 
+On Windows use `scripts\fork\app.cmd dev` / `scripts\fork\app.cmd build`
+(from Command Prompt or PowerShell), and run the other fork scripts in Git Bash.
+
 Use these instead of `pnpm tauri:dev` / `tauri:build`: they build the
 llama-helper sidecar (via upstream's `dev-gpu.sh` / `build-gpu.sh`).
 Tauri merges the fork's platform config files (`frontend/src-tauri/tauri.macos.conf.json`,
