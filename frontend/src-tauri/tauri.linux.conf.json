@@ -1,9 +1,5 @@
 {
   "bundle": {
-    "resources": {
-      "templates": "templates",
-      "binaries/onnxruntime": "."
-    },
     "createUpdaterArtifacts": false
   },
   "plugins": {

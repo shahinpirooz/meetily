@@ -79,13 +79,23 @@ scripts/fork/test-fork.sh --rust     # + Rust unit tests for rich_export.rs (com
 
 ## Building
 
-Follow upstream's `docs/BUILDING.md`, from the `rich-export` branch:
+Install the platform prerequisites from upstream's `docs/BUILDING.md` plus
+Rust (https://rustup.rs), then from the `rich-export` branch:
 
 ```bash
-cd frontend
-pnpm install --frozen-lockfile
-pnpm run tauri:build        # or tauri:dev to run in development
+scripts/fork/app.sh dev      # run in development mode
+scripts/fork/app.sh build    # installable build
 ```
+
+Use these instead of `pnpm tauri:dev` / `tauri:build`: they build the
+llama-helper sidecar (via upstream's `dev-gpu.sh` / `build-gpu.sh`).
+Tauri merges the fork's platform config files (`frontend/src-tauri/tauri.macos.conf.json`,
+`tauri.linux.conf.json`, and two keys added to upstream's `tauri.windows.conf.json`),
+which turn off two upstream-only settings:
+
+- signed updater artifacts (the signing key belongs to upstream)
+- updates from upstream's releases (the fork checks its own releases, so it
+  never replaces itself with plain Meetily)
 
 ## Giving it back
 
