@@ -29,7 +29,7 @@ rem whisper-rs-sys (bindgen 0.69) misreads whisper.h with LLVM 20 or newer and
 rem produces empty structs ("no field `greedy` on type `whisper_full_params`").
 rem Require LLVM 19 or older.
 set "CLANG_MAJOR="
-for /f "tokens=3 delims= " %%v in ('"C:\Program Files\LLVM\bin\clang.exe" --version ^| findstr /b "clang version"') do (
+for /f "tokens=3 delims= " %%v in ('"C:\Program Files\LLVM\bin\clang.exe" --version ^| findstr /b clang') do (
   for /f "tokens=1 delims=." %%m in ("%%v") do set "CLANG_MAJOR=%%m"
 )
 if defined CLANG_MAJOR if !CLANG_MAJOR! GEQ 20 (
