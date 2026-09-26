@@ -34,7 +34,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.SYNC_TOKEN }}
@@ -46,7 +46,9 @@ jobs:
           git config user.email "fork-sync-bot@users.noreply.github.com"
           git remote add upstream "$UPSTREAM"
           git fetch upstream main --tags
-          git checkout main
+          # The job starts on rich-export, so there's no local main yet, and a
+          # bare "git checkout main" is ambiguous (origin/main vs upstream/main).
+          git checkout -B main origin/main
           before=$(git rev-parse HEAD)
           git merge --ff-only upstream/main
           git push origin main --tags
@@ -73,7 +75,7 @@ jobs:
             git checkout -B "$SYNC" main   # PR shows upstream changes; resolve locally
           fi
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.merge.outputs.needed == 'true' && steps.merge.outputs.conflicts == ''
         with:
           node-version: 20
