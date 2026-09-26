@@ -25,6 +25,21 @@ if not exist "C:\Program Files\LLVM\bin\libclang.dll" (
   exit /b 1
 )
 set "LIBCLANG_PATH=C:\Program Files\LLVM\bin"
+rem whisper-rs-sys (bindgen 0.69) misreads whisper.h with LLVM 20 or newer and
+rem produces empty structs ("no field `greedy` on type `whisper_full_params`").
+rem Require LLVM 19 or older.
+set "CLANG_MAJOR="
+for /f "tokens=3 delims= " %%v in ('"C:\Program Files\LLVM\bin\clang.exe" --version ^| findstr /b "clang version"') do (
+  for /f "tokens=1 delims=." %%m in ("%%v") do set "CLANG_MAJOR=%%m"
+)
+if defined CLANG_MAJOR if !CLANG_MAJOR! GEQ 20 (
+  echo LLVM !CLANG_MAJOR! is too new for Meetily's Whisper bindings. Install LLVM 18:
+  echo   winget uninstall LLVM.LLVM
+  echo   winget install LLVM.LLVM --version 18.1.8
+  echo then: cd "%ROOT%" ^&^& cargo clean -p whisper-rs-sys --release
+  exit /b 1
+)
+echo LLVM !CLANG_MAJOR!
 
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" (
