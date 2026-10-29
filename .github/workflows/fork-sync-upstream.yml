@@ -42,6 +42,7 @@ jobs:
       - name: Fast-forward main to upstream
         id: ff
         run: |
+          git remote set-url origin https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/${{ github.repository }}.git
           git config user.name "fork-sync-bot"
           git config user.email "fork-sync-bot@users.noreply.github.com"
           git remote add upstream "$UPSTREAM"
