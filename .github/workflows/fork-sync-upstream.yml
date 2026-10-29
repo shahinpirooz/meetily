@@ -42,20 +42,18 @@ jobs:
       - name: Fast-forward main to upstream
         id: ff
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/${{ github.repository }}.git
           git config user.name "fork-sync-bot"
           git config user.email "fork-sync-bot@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/${{ github.repository }}.git
           git remote add upstream "$UPSTREAM"
           git fetch upstream main --tags
-          # The job starts on rich-export, so there's no local main yet, and a
-          # bare "git checkout main" is ambiguous (origin/main vs upstream/main).
           git checkout -B main origin/main
           before=$(git rev-parse HEAD)
           git merge --ff-only upstream/main
           git push origin main --tags
           echo "changed=$([ "$before" != "$(git rev-parse HEAD)" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           echo "version=$(git describe --tags --abbrev=0 2>/dev/null || git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
+      
       - name: Merge main into the feature branch
         id: merge
         run: |
